@@ -31,4 +31,10 @@ class SuperAdderTest extends FreeSpec with Matchers{
       add[Option[Int]](List(1,2,3,4).map(Some(_))) should be(Some(10))
     }
   }
+
+  "Add orders" - {
+    "should add a list of orders" in {
+      add[Order](List(Order(1d, 1d), Order(3d, 46d))) should be(Order(4d, 47d))
+    }
+  }
 }
