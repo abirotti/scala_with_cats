@@ -1,6 +1,6 @@
 package O3_Functors
 
-import O3_Functors.Functors.{Branch, Leaf, Printable, format}
+import O3_Functors.Functors.{Box, Branch, Leaf, format}
 import org.scalatest.{FreeSpec, Matchers}
 
 class FunctorsTest extends FreeSpec with Matchers {
@@ -21,20 +21,26 @@ class FunctorsTest extends FreeSpec with Matchers {
 
   "Printable" - {
     "should print a string" in {
-      implicit val stringPrintable: Printable[String] =
-        (value: String) => "\"" + value + "\""
-
       format("hello") should be("\"hello\"")
     }
     "should print a boolean" - {
-      implicit val booleanPrintable: Printable[Boolean] =
-        (value: Boolean) => if (value) "yes" else "no"
-
       "as yes if true" in {
         format(true) should be("yes")
       }
       "as no if false" in {
         format(false) should be("no")
+      }
+    }
+    "should print a box using the printer defined for the underlying value" - {
+      "for a boxed string" in {
+        format(Box("hello")) should be("\"hello\"")
+      }
+      "for a boxed boolean" in {
+        format(Box(true)) should be("yes")
+      }
+      "for a boxed integer" in {
+        //should not compile as it required an implicit Printable[Int]!!!
+//        format(Box(1)) should be("yes")
       }
     }
   }

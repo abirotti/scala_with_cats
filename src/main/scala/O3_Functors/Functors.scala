@@ -27,4 +27,15 @@ object Functors {
   }
 
   def format[A](value: A)(implicit p: Printable[A]) = p.format(value)
+
+  implicit val stringPrintable: Printable[String] = (value: String) =>
+    "\"" + value + "\""
+  implicit val booleanPrintable: Printable[Boolean] = (value: Boolean) =>
+    if (value) "yes" else "no"
+
+  final case class Box[A](value: A)
+
+  implicit def boxPrintable[A](
+      implicit printable: Printable[A]): Printable[Box[A]] =
+    printable.contramap(_.value)
 }
