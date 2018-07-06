@@ -15,4 +15,14 @@ object Functors {
       case Branch(l, r) => Branch(map(l)(f), map(r)(f))
     }
   }
+
+  trait Printable[A] {
+    external =>
+    def format(value: A): String
+
+    def contramap[B](func: B => A): Printable[B] =
+      (value: B) => {
+        external.format(func(value))
+      }
+  }
 }
