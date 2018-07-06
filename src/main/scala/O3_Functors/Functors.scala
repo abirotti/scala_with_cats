@@ -25,4 +25,6 @@ object Functors {
         external.format(func(value))
       }
   }
+
+  def format[A](value: A)(implicit p: Printable[A]) = p.format(value)
 }
