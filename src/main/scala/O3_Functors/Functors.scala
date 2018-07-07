@@ -26,7 +26,7 @@ object Functors {
       }
   }
 
-  def format[A](value: A)(implicit p: Printable[A]) = p.format(value)
+  def format[A](value: A)(implicit p: Printable[A]): String = p.format(value)
 
   implicit val stringPrintable: Printable[String] = (value: String) =>
     "\"" + value + "\""
