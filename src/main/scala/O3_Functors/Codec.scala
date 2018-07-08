@@ -30,4 +30,7 @@ object Codec {
     stringCodec.imap(_.toDouble, _.toString)
 
   case class Box[A](value: A)
+
+  implicit def boxCodec[A](implicit codecForA: Codec[A]): Codec[Box[A]] =
+    codecForA.imap(Box(_), _.value)
 }

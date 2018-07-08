@@ -1,6 +1,6 @@
 package O3_Functors
 
-import O3_Functors.Codec.doubleCodec
+import O3_Functors.Codec.{Box, doubleCodec}
 import org.scalatest.{FreeSpec, Matchers}
 
 class CodecTest extends FreeSpec with Matchers{
@@ -14,6 +14,13 @@ class CodecTest extends FreeSpec with Matchers{
       doubleCodec.encode(3.14) should be("3.14")
     }
   }
-
+  "BoxCodec" - {
+    "should encode a Box of double to String" in {
+      Codec.boxCodec.encode(Box(123.4)) should be("123.4")
+    }
+    "should decode a String to Box[Double]" in {
+      Codec.boxCodec.decode("123.4") should be(Box(123.4))
+    }
+  }
 
 }
