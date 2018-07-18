@@ -1,3 +1,4 @@
+object statez {
   import cats.data.State
   val myAge = State[Int, String] { age =>
     age + 1 -> s"my age was $age before being increased"
@@ -16,16 +17,15 @@
     }
 
   def evalOne(sym: String): CalcState[Int] = sym match {
-    case "+"    => operate(_+_)
-    case "-"    => operate(_-_)
-    case "*"    => operate(_*_)
-    case "/"    => operate(_/_)
+    case "+"    => operate(_ + _)
+    case "-"    => operate(_ - _)
+    case "*"    => operate(_ * _)
+    case "/"    => operate(_ / _)
     case number => addValue(number.toInt)
   }
 
-  def addValue(number: Int): CalcState[Int] = State[List[Int], Int] {
-    stack =>
-      (number +: stack) -> number
+  def addValue(number: Int): CalcState[Int] = State[List[Int], Int] { stack =>
+    (number +: stack) -> number
   }
 
   val program = for {
@@ -35,3 +35,4 @@
   } yield answer
 
   program.runA(Nil).value
+}
