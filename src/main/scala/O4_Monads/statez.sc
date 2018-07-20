@@ -35,4 +35,30 @@ object statez {
   } yield answer
 
   program.runA(Nil).value
+
+  def evalAll(input: List[String]): CalcState[Int] =
+    input.foldLeft(
+      State.pure[List[Int], Int](0)
+    ) {
+      case (state, in) =>
+        state.flatMap(_ => evalOne(in))
+    }
+
+  val prog = evalAll(List("1", "2", "+", "3", "*"))
+  prog.runA(Nil).value
+
+  val yap = for {
+    _ <- evalAll(List("1", "2", "+"))
+    _ <- evalAll(List("3", "4", "+"))
+    answer <- evalOne("*")
+  } yield answer
+
+  yap.runA(Nil).value
+
+  def evalInput(input: String) = {
+    val commands: Array[String] = input.split("")
+    evalAll(commands.toList).runA(Nil).value
+  }
+
+  evalInput("12+34+*")
 }
