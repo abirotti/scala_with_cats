@@ -8,14 +8,6 @@ object statez {
 
   type CalcState[A] = State[List[Int], A]
 
-  def operate(operation: (Int, Int) => Int): CalcState[Int] =
-    State[List[Int], Int] {
-      case a :: b :: tail =>
-        val res: Int = operation(a, b)
-        (res :: tail) -> res
-      case _ => throw new RuntimeException("something went really wrong")
-    }
-
   def evalOne(sym: String): CalcState[Int] = sym match {
     case "+"    => operate(_ + _)
     case "-"    => operate(_ - _)
@@ -24,8 +16,17 @@ object statez {
     case number => addValue(number.toInt)
   }
 
-  def addValue(number: Int): CalcState[Int] = State[List[Int], Int] { stack =>
-    (number +: stack) -> number
+  private def operate(operation: (Int, Int) => Int): CalcState[Int] =
+    State[List[Int], Int] {
+      case a :: b :: tail =>
+        val res: Int = operation(a, b)
+        (res :: tail) -> res
+      case _ => throw new RuntimeException("something went really wrong")
+    }
+
+  private def addValue(number: Int): CalcState[Int] = State[List[Int], Int] {
+    stack =>
+      (number +: stack) -> number
   }
 
   val program = for {
@@ -36,11 +37,11 @@ object statez {
 
   program.runA(Nil).value
 
+  def initialCalcState: CalcState[Int] = State.pure[List[Int], Int](0)
+
   def evalAll(input: List[String]): CalcState[Int] =
-    input.foldLeft(
-      State.pure[List[Int], Int](0)
-    ) {
-      case (state, in) =>
+    input.foldLeft(initialCalcState) {
+      case (state: CalcState[Int], in: String) =>
         state.flatMap(_ => evalOne(in))
     }
 

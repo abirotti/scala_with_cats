@@ -49,6 +49,8 @@ object readers {
   findUsername(1)(db)
   findUsername(2)(db)
 
+  val andreaCanLogin = checkPassword("Andrea", "lol")(db)
+
   def checkLogin(
       userId: Int,
       password: String

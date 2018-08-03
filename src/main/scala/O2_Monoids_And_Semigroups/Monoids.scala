@@ -1,9 +1,12 @@
 package O2_Monoids_And_Semigroups
 
+
+//A Semigroup only knows how to combine values of the type it is parameterised with
 trait Semigroup[A] {
   def combine(x: A, y: A): A
 }
 
+//A Monoid is a Semigroup with an empty value
 trait Monoid[A] extends Semigroup[A] {
   def empty: A
 }

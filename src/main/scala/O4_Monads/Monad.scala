@@ -17,18 +17,22 @@ object Id {
   import cats.Id // type Id[A] = A
 
   def pure[A](value: A): Id[A] = value
+  //WTH, they are the same!!!! pure and Id cancel each other and we are left with a generic functionality, and
+  //behind-the-scenes casting
   def map[A, B](initial: Id[A])(func: A => B): Id[B] = func(initial)
   def flatMap[A, B](initial: Id[A])(func: A => Id[B]): Id[B] =
-    map(initial)(func)
+    func(initial) //map(initial)(func)
 }
 
 object Evalz {
 
   //TODO make the following stack-safe using the Eval monad
-  def foldRight[A, B](as: List[A], acc: B)(fn: (A, B) => B): B = as match {
-    case head :: tail => fn(head, foldRight(tail, acc)(fn))
-    case Nil          => acc
-  }
+  def foldRight[A, B](as: List[A], acc: B)(fn: (A, B) => B): B =
+    as match {
+      case head :: tail =>
+        fn(head, foldRight(tail, acc)(fn))
+      case Nil => acc
+    }
 
   def foldR[A, B](as: List[A], acc: B)(fn: (A, B) => B): Eval[B] =
     as match {

@@ -13,6 +13,7 @@ object Writerz {
   }
 
   factorial(5)
+  // All well, while we are doing it only once
 
   import scala.concurrent._
   import scala.concurrent.ExecutionContext.Implicits.global
@@ -22,11 +23,14 @@ object Writerz {
     Future.sequence(Vector(Future(factorial(3)), Future(factorial(3)))),
     5 seconds)
 
+  //Uh, which log is for which factorial???
+
   import cats.data.Writer
   import cats.instances.vector._
   import cats.syntax.applicative._
   import cats.syntax.writer._
 
+  //connects the logs to the individual process, to be unfolded later upon request
   type Logged[A] = Writer[Vector[String], A]
 
   def fact(n: Int): Logged[Int] = {
@@ -34,8 +38,12 @@ object Writerz {
       if (n == 0)
         1.pure[Logged]
       else
-        slowly(fact(n - 1).map(_ * n))
+        slowly(fact(n - 1).map(_ * n)) // this would return an Int
+
+    //returns a Writer[Vector[String], Int]
     ans.mapWritten(_ :+ s"fact $n ${ans.value}")
+
+    //could also use bimap which (as usual) takes two functions to transform both the logs and the value
   }
 
   val Vector((logA, ansA), (logB, ansB)) =
