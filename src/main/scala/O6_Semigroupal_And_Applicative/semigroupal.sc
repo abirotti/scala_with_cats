@@ -1,3 +1,5 @@
+import scala.language.higherKinds
+
 object semigroupal {
 
   import cats.instances.option._
@@ -33,4 +35,22 @@ object semigroupal {
   (Some(1), Option(2), Option(3)).mapN { (a, b, c) =>
     a + b + c
   }
+
+  //Cat/Tuple Encoder
+  case class Kat(name: String, yOB: Int, foods: List[String])
+
+  val tupleToKat: (String, Int, List[String]) => Kat = Kat.apply
+
+  val katToTuple: Kat => (String, Int, List[String]) = kat =>
+    (kat.name, kat.yOB, kat.foods)
+
+  val datuple = ("lal", 2012, List("Milk"))
+  val dakat = tupleToKat(datuple._1, datuple._2, datuple._3)
+
+  //back home again works a treat
+  katToTuple(dakat) == datuple
+
+  //List and Either .product are implemented in terms of their map and flatMap,
+  // so they retains the sequential character of the Monad
+  // Semigroupal is still useful to provide the product behaviour for data types that are not Monad.
 }
