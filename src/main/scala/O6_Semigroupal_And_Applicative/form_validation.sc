@@ -12,7 +12,7 @@ object form_validation {
   import cats.syntax.either._
 
   def parseInt(string: String): ErrorsOr[Int] =
-    Try(string.toInt).toEither.leftMap(_ => s"$string not an integer" :: Nil)
+    Try(string.toInt).toEither.leftMap(_ => s"`$string` not an integer" :: Nil)
 
   //TODO push IDEA to see the truth of this
   def notBlank(string: String): ErrorsOr[String] =
@@ -26,7 +26,7 @@ object form_validation {
 }
 
 
-def readName(map: Map[String, String])(name:String): form_validation.ErrorsOr[String] =
+def readName(map: Map[String, String])(name: String): form_validation.ErrorsOr[String] =
   for {
     daName <- form_validation.getValue(name)(map)
     name <- form_validation.notBlank(daName)
@@ -35,11 +35,27 @@ def readName(map: Map[String, String])(name:String): form_validation.ErrorsOr[St
 val simplestMap = Map("a" -> "", "b" -> "lol")
 readName(simplestMap)("a")
 
-def readAge(map: Map[String, String])(name:String): form_validation.ErrorsOr[Int] =
+def readAge(map: Map[String, String])(name: String): form_validation.ErrorsOr[Int] =
   for {
-    daAge    <- form_validation.getValue(name)(map)
+    daAge <- form_validation.getValue(name)(map)
     daIntAge <- form_validation.parseInt(daAge)
-    age      <- form_validation.nonNegative(daIntAge)
+    age <- form_validation.nonNegative(daIntAge)
   } yield age
 
 readAge(simplestMap)("b")
+
+import cats.data.Validated
+import cats.syntax.apply._
+import cats.instances.list._
+
+(
+  Validated.fromEither(readName(simplestMap)("a")),
+  Validated.fromEither(readAge(simplestMap)("b"))
+).tupled
+
+List(readName(simplestMap)("a"), readAge(simplestMap)("b"), readAge(simplestMap)("b"))
+  .map(Validated.fromEither)
+  .reduce {
+    (a, b) =>
+      (a, b).tupled
+  }
